@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Parking"
+        android:id="@+id/parkingFragment"
+        android:icon="@drawable/slots"/>
+
+    <item android:title="Details"
+        android:id="@+id/detailsFragment"
+        android:icon="@drawable/details"/>
+
+    <item android:title="Home"
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/home"/>
+
+    <item android:title="Calendar"
+        android:id="@+id/calendarFragment"
+        android:icon="@drawable/calendar"/>
+
+    <item android:title="Profile"
+        android:id="@+id/profileFragment"
+        android:icon="@drawable/profile"/>
+
+</menu>
