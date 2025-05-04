@@ -13,7 +13,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-
 class CreateAccountActivity : AppCompatActivity() {
 
     private lateinit var name: String
@@ -48,14 +47,22 @@ class CreateAccountActivity : AppCompatActivity() {
             confirmPassword = binding.confirmPasswordField.text.toString().trim()
 
             if (name.isBlank() || userName.isBlank() || email.isBlank() || plateNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
-                Toast.makeText(this, "Please fill all the details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show()
+            } else if (name.length < 3) {
+                Toast.makeText(this, "Name must be at least 3 characters", Toast.LENGTH_SHORT).show()
+            } else if (userName.length < 4) {
+                Toast.makeText(this, "Username must be at least 4 characters", Toast.LENGTH_SHORT).show()
+            } else if (plateNumber.length < 6) {
+                Toast.makeText(this, "Plate number must be at least 6 characters", Toast.LENGTH_SHORT).show()
+            } else if (password.length < 6) {
+                Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
+            } else if (password != confirmPassword) {
+                Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show()
             } else {
                 createAccount(email, password)
             }
-
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
         }
+
 
         // Go to Sign In page
         binding.signInButton.setOnClickListener {
@@ -65,7 +72,6 @@ class CreateAccountActivity : AppCompatActivity() {
         // Go back to Main page
         binding.backButton.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
-            finish()
         }
     }
 
