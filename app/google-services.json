@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "914158426635",
+    "project_id": "parkease-fdbe8",
+    "storage_bucket": "parkease-fdbe8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914158426635:android:79fe89dad2c789a376c50e",
+        "android_client_info": {
+          "package_name": "com.example.parkingtangina"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjx2ywQwDGjPwqT7uzbuydhdTnBoH7-10"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
