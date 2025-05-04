@@ -6,11 +6,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.parkingtangina.databinding.ActivityCreateAccountBinding
+import com.example.parkingtangina.model.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+
 
 class CreateAccountActivity : AppCompatActivity() {
 
