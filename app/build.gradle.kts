@@ -59,4 +59,5 @@ dependencies {
     implementation("com.google.firebase:firebase-database:21.0.0")
 
     implementation("com.github.denzcoskun:ImageSlideshow:0.1.2")
+
 }

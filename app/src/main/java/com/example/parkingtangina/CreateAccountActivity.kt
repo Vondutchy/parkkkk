@@ -95,3 +95,4 @@ class CreateAccountActivity : AppCompatActivity() {
         database.child("user").child(userId).setValue(user)
     }
 }
+

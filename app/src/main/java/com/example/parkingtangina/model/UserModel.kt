@@ -8,3 +8,4 @@ data class UserModel(
     val password: String? = null,
     val confirmPassword: String? = null
 )
+
