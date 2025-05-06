@@ -7,27 +7,27 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.example.parkingtangina.Fragment.HomeFragment"
+        android:name="com.example.parkingapp.Fragment.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/parkingFragment"
-        android:name="com.example.parkingtangina.Fragment.ParkingFragment"
+        android:name="com.example.parkingapp.Fragment.ParkingFragment"
         android:label="fragment_parking"
         tools:layout="@layout/fragment_parking" />
     <fragment
         android:id="@+id/detailsFragment"
-        android:name="com.example.parkingtangina.Fragment.DetailsFragment"
+        android:name="com.example.parkingapp.Fragment.DetailsFragment"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details" />
     <fragment
         android:id="@+id/calendarFragment"
-        android:name="com.example.parkingtangina.Fragment.CalendarFragment"
+        android:name="com.example.parkingapp.Fragment.CalendarFragment"
         android:label="fragment_calendar"
         tools:layout="@layout/fragment_calendar" />
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.parkingtangina.Fragment.ProfileFragment"
+        android:name="com.example.parkingapp.Fragment.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>

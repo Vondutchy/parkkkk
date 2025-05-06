@@ -1,4 +1,4 @@
-package com.example.parkingtangina
+package com.example.parkingapp
 
 import android.content.Intent
 import android.os.Bundle

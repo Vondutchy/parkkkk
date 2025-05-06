@@ -1,4 +1,4 @@
-package com.example.parkingtangina
+package com.example.parkingapp
 
 import org.junit.Test
 

@@ -1,12 +1,12 @@
-package com.example.parkingtangina
+package com.example.parkingapp
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.parkingtangina.databinding.ActivityCreateAccountBinding
-import com.example.parkingtangina.model.UserModel
+import com.example.parkingapp.databinding.ActivityCreateAccountBinding
+import com.example.parkingapp.model.UserModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.auth.ktx.auth

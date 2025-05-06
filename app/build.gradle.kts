@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.parkingtangina"
+    namespace = "com.example.parkingapp"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.parkingtangina"
+        applicationId = "com.example.parkingapp"
         minSdk = 24
         targetSdk = 35
         versionCode = 1

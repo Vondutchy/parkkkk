@@ -1,4 +1,4 @@
-package com.example.parkingtangina.model
+package com.example.parkingapp.model
 
 data class UserModel(
     val name: String? = null,

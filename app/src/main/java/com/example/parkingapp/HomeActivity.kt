@@ -1,4 +1,4 @@
-package com.example.parkingtangina
+package com.example.parkingapp
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

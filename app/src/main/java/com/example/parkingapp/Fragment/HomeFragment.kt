@@ -1,4 +1,4 @@
-package com.example.parkingtangina.Fragment
+package com.example.parkingapp.Fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.denzcoskun.imageslider.constants.ScaleTypes
 import com.denzcoskun.imageslider.models.SlideModel
-import com.example.parkingtangina.R
-import com.example.parkingtangina.databinding.FragmentHomeBinding
+import com.example.parkingapp.R
+import com.example.parkingapp.databinding.FragmentHomeBinding
 
 
 class HomeFragment : Fragment() {
