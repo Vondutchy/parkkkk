@@ -1,12 +1,10 @@
-package com.example.parkingapp.Fragment
+package com.example.parkingapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
-import com.example.parkingapp.R
+import androidx.appcompat.app.AppCompatActivity
 import com.example.parkingapp.databinding.FragmentDetailsBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -16,10 +14,8 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.*
 
-class DetailsFragment : Fragment() {
-    private var _binding: FragmentDetailsBinding? = null
-    private val binding get() = _binding!!
-
+class FloorDetailsActivity : AppCompatActivity() {
+    private lateinit var binding: FragmentDetailsBinding
     private lateinit var auth: FirebaseAuth
     private val database = FirebaseDatabase.getInstance()
 
@@ -43,29 +39,21 @@ class DetailsFragment : Fragment() {
         OCCUPIED
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentDetailsBinding.inflate(inflater, container, false)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentDetailsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
 
-        // Get arguments from the parking fragment
-        arguments?.let {
-            floorName = it.getString("floor") ?: "1st Floor"
-            selectedDate = it.getLong("selectedDate", 0)
-            startHour = it.getInt("startHour", 0)
-            startMinute = it.getInt("startMinute", 0)
-            endHour = it.getInt("endHour", 0)
-            endMinute = it.getInt("endMinute", 0)
-            duration = it.getInt("duration", 1)
-        }
+        // Get data from intent
+        floorName = intent.getStringExtra("floor") ?: "1st Floor"
+        selectedDate = intent.getLongExtra("selectedDate", 0)
+        startHour = intent.getIntExtra("startHour", 0)
+        startMinute = intent.getIntExtra("startMinute", 0)
+        endHour = intent.getIntExtra("endHour", 0)
+        endMinute = intent.getIntExtra("endMinute", 0)
+        duration = intent.getIntExtra("duration", 1)
 
         binding.floorTitleText.text = floorName
 
@@ -83,7 +71,8 @@ class DetailsFragment : Fragment() {
     }
 
     private fun loadParkingSlots() {
-        val floorRef = database.getReference("parking").child(floorName.replace(" ", "").toLowerCase())
+        val floorRef = database.getReference("parking").child(floorName.replace(" ", "")
+            .lowercase(Locale.ROOT))
 
         floorRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -124,7 +113,7 @@ class DetailsFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to load parking data", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@FloorDetailsActivity, "Failed to load parking data", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -152,17 +141,59 @@ class DetailsFragment : Fragment() {
         // This is just a placeholder to show the concept
         when (slotId) {
             "A1" -> {
-                if (status == SlotStatus.OCCUPIED) {
-                    binding.plateNumberA1.text = plateNumber
-                    binding.phoneNumberA1.text = phoneNumber
-                    binding.carDetailsA1.visibility = View.VISIBLE
-                    binding.slotA1Background.setBackgroundResource(R.drawable.red_dashed_border_filled)
-                } else if (status == SlotStatus.RESERVED) {
-                    binding.carDetailsA1.visibility = View.GONE
-                    binding.slotA1Background.setBackgroundResource(R.drawable.yellow_dashed_border)
-                } else {
-                    binding.carDetailsA1.visibility = View.GONE
-                    binding.slotA1Background.setBackgroundResource(R.drawable.green_dashed_border)
+                when (status) {
+                    SlotStatus.OCCUPIED -> {
+                        binding.plateNumberA1.text = plateNumber
+                        binding.phoneNumberA1.text = phoneNumber
+                        binding.carDetailsA1.visibility = View.VISIBLE
+                        binding.slotA1Background.setBackgroundResource(R.drawable.red_dashed_border_filled)
+                    }
+                    SlotStatus.RESERVED -> {
+                        binding.carDetailsA1.visibility = View.GONE
+                        binding.slotA1Background.setBackgroundResource(R.drawable.yellow_dashed_border)
+                    }
+                    else -> {
+                        binding.carDetailsA1.visibility = View.GONE
+                        binding.slotA1Background.setBackgroundResource(R.drawable.green_dashed_border)
+                    }
+                }
+            }
+
+            "A2" -> {
+                when (status) {
+                    SlotStatus.OCCUPIED -> {
+                        binding.plateNumberA2.text = plateNumber
+                        binding.phoneNumberA2.text = phoneNumber
+                        binding.carDetailsA2.visibility = View.VISIBLE
+                        binding.slotA2Background.setBackgroundResource(R.drawable.red_dashed_border_filled)
+                    }
+                    SlotStatus.RESERVED -> {
+                        binding.carDetailsA2.visibility = View.GONE
+                        binding.slotA2Background.setBackgroundResource(R.drawable.yellow_dashed_border)
+                    }
+                    else -> {
+                        binding.carDetailsA2.visibility = View.GONE
+                        binding.slotA2Background.setBackgroundResource(R.drawable.green_dashed_border)
+                    }
+                }
+            }
+
+            "A3" -> {
+                when (status) {
+                    SlotStatus.OCCUPIED -> {
+                        binding.plateNumberA3.text = plateNumber
+                        binding.phoneNumberA3.text = phoneNumber
+                        binding.carDetailsA3.visibility = View.VISIBLE
+                        binding.slotA3Background.setBackgroundResource(R.drawable.red_dashed_border_filled)
+                    }
+                    SlotStatus.RESERVED -> {
+                        binding.carDetailsA3.visibility = View.GONE
+                        binding.slotA3Background.setBackgroundResource(R.drawable.yellow_dashed_border)
+                    }
+                    else -> {
+                        binding.carDetailsA3.visibility = View.GONE
+                        binding.slotA3Background.setBackgroundResource(R.drawable.green_dashed_border)
+                    }
                 }
             }
             // Add more slots similarly
@@ -170,6 +201,11 @@ class DetailsFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        // Back button
+//        binding.backButton.setOnClickListener {
+//            finish()
+//        }
+
         // Set up click listeners for slots
         binding.slotA1.setOnClickListener {
             selectSlot("A1")
@@ -189,6 +225,7 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun selectSlot(slotId: String) {
         val status = slotStatus[slotId] ?: return
 
@@ -212,7 +249,7 @@ class DetailsFragment : Fragment() {
                 // Allow reservation
                 selectedSlot = slotId
 
-                // Update date/time from arguments
+                // Update date/time from intent
                 updateDateTimeDisplay()
                 calculatePrice()
             }
@@ -249,6 +286,7 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateDateTimeDisplay() {
         // Convert the stored date and time to display format
         val calendar = Calendar.getInstance()
@@ -273,6 +311,7 @@ class DetailsFragment : Fragment() {
         binding.dateTimeInput.setText("$dateStr | $startTimeStr - $endTimeStr")
     }
 
+    @SuppressLint("SetTextI18n")
     private fun calculatePrice() {
         // Calculate price based on duration
         val pricePerHour = 20 // PHP per hour
@@ -285,12 +324,12 @@ class DetailsFragment : Fragment() {
         val currentUser = auth.currentUser
 
         if (currentUser == null) {
-            Toast.makeText(requireContext(), "Please sign in to make a reservation", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please sign in to make a reservation", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (selectedSlot == null) {
-            Toast.makeText(requireContext(), "Please select a slot", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Please select a slot", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -329,7 +368,7 @@ class DetailsFragment : Fragment() {
                     database.getReference("reservations").child(reservationId).setValue(reservationMap)
                         .addOnSuccessListener {
                             // Update slot status
-                            val floorKey = floorName.replace(" ", "").toLowerCase()
+                            val floorKey = floorName.replace(" ", "").lowercase(Locale.ROOT)
 
                             // Mark slot as reserved
                             database.getReference("parking")
@@ -342,23 +381,21 @@ class DetailsFragment : Fragment() {
                                     // Update available count
                                     updateAvailableSlotsCount(floorKey)
 
-                                    Toast.makeText(requireContext(), "Reservation successful", Toast.LENGTH_SHORT).show()
-
-                                    // Navigate back to home
-                                    activity?.onBackPressed()
+                                    Toast.makeText(this@FloorDetailsActivity, "Reservation successful", Toast.LENGTH_SHORT).show()
+                                    finish()
                                 }
                                 .addOnFailureListener { e ->
-                                    Toast.makeText(requireContext(), "Failed to update slot: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this@FloorDetailsActivity, "Failed to update slot: ${e.message}", Toast.LENGTH_SHORT).show()
                                 }
                         }
                         .addOnFailureListener { e ->
-                            Toast.makeText(requireContext(), "Reservation failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@FloorDetailsActivity, "Reservation failed: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(requireContext(), "Failed to get user details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@FloorDetailsActivity, "Failed to get user details", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -390,10 +427,5 @@ class DetailsFragment : Fragment() {
                     // Handle error
                 }
             })
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

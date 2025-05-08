@@ -6,7 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.parkingapp.databinding.ActivityCreateAccountBinding
-import com.example.parkingapp.model.UserModel
+import com.example.parkingapp.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.auth.ktx.auth
@@ -96,7 +96,7 @@ class CreateAccountActivity : AppCompatActivity() {
         email = binding.emailField.text.toString().trim()
         plateNumber = binding.plateNumberField.text.toString().trim()
         password = binding.passwordField.text.toString().trim()
-        val user = UserModel(name, userName, email, plateNumber, password)
+        val user = User(name, userName, email, plateNumber, password)
         val userId = FirebaseAuth.getInstance().currentUser!!.uid
         database.child("user").child(userId).setValue(user)
     }

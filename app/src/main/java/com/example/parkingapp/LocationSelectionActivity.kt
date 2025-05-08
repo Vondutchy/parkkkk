@@ -1,26 +1,19 @@
-package com.example.parkingapp.Fragment
+package com.example.parkingapp
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Toast
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
-import com.example.parkingapp.R
+import androidx.appcompat.app.AppCompatActivity
 import com.example.parkingapp.databinding.FragmentParkingBinding
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class ParkingFragment : Fragment() {
-    private var _binding: FragmentParkingBinding? = null
-    private val binding get() = _binding!!
-
+class LocationSelectionActivity : AppCompatActivity() {
+    private lateinit var binding: FragmentParkingBinding
     private val database = FirebaseDatabase.getInstance()
 
-    // Booking details from previous fragment
+    // Booking details from previous screen
     private var selectedDate: Long = 0
     private var startHour: Int = 0
     private var startMinute: Int = 0
@@ -28,26 +21,18 @@ class ParkingFragment : Fragment() {
     private var endMinute: Int = 0
     private var duration: Int = 1
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentParkingBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentParkingBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        // Get arguments from the calendar fragment
-        arguments?.let {
-            selectedDate = it.getLong("selectedDate", 0)
-            startHour = it.getInt("startHour", 0)
-            startMinute = it.getInt("startMinute", 0)
-            endHour = it.getInt("endHour", 0)
-            endMinute = it.getInt("endMinute", 0)
-            duration = it.getInt("duration", 1)
-        }
+        // Get booking details from intent
+        selectedDate = intent.getLongExtra("selectedDate", 0)
+        startHour = intent.getIntExtra("startHour", 0)
+        startMinute = intent.getIntExtra("startMinute", 0)
+        endHour = intent.getIntExtra("endHour", 0)
+        endMinute = intent.getIntExtra("endMinute", 0)
+        duration = intent.getIntExtra("duration", 1)
 
         loadParkingAvailability()
         setupClickListeners()
@@ -75,7 +60,6 @@ class ParkingFragment : Fragment() {
 
             override fun onCancelled(error: DatabaseError) {
                 // Handle error
-                Toast.makeText(requireContext(), "Failed to load parking data", Toast.LENGTH_SHORT).show()
             }
         })
     }
@@ -90,6 +74,11 @@ class ParkingFragment : Fragment() {
     }
 
     private fun setupClickListeners() {
+        // Back button
+//        binding.backButton.setOnClickListener {
+//            finish()
+//        }
+
         // Floor cards
         binding.firstFloorCard.setOnClickListener {
             navigateToFloorDetails("1st Floor")
@@ -106,25 +95,28 @@ class ParkingFragment : Fragment() {
         binding.fourthFloorCard.setOnClickListener {
             navigateToFloorDetails("4th Floor")
         }
+
+        // Bottom navigation
+//        binding.homeNavButton.setOnClickListener {
+//            val intent = Intent(this, HomeActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            startActivity(intent)
+//        }
+//
+//        binding.calendarNavButton.setOnClickListener {
+//            finish() // Go back to calendar
+//        }
     }
 
     private fun navigateToFloorDetails(floor: String) {
-        val bundle = Bundle().apply {
-            putString("floor", floor)
-            putLong("selectedDate", selectedDate)
-            putInt("startHour", startHour)
-            putInt("startMinute", startMinute)
-            putInt("endHour", endHour)
-            putInt("endMinute", endMinute)
-            putInt("duration", duration)
-        }
-
-        // Navigate to floor details (we'll use DetailsFragment for this)
-        findNavController().navigate(R.id.detailsFragment, bundle)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+        val intent = Intent(this, FloorDetailsActivity::class.java)
+        intent.putExtra("floor", floor)
+        intent.putExtra("selectedDate", selectedDate)
+        intent.putExtra("startHour", startHour)
+        intent.putExtra("startMinute", startMinute)
+        intent.putExtra("endHour", endHour)
+        intent.putExtra("endMinute", endMinute)
+        intent.putExtra("duration", duration)
+        startActivity(intent)
     }
 }

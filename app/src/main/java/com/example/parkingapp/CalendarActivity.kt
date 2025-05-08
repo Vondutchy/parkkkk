@@ -1,27 +1,27 @@
-package com.example.parkingapp.Fragment
+package com.example.parkingapp
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.parkingapp.R
 import com.example.parkingapp.databinding.FragmentCalendarBinding
+import com.example.parkingapp.model.FirebaseRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CalendarFragment : Fragment() {
-    private var _binding: FragmentCalendarBinding? = null
-    private val binding get() = _binding!!
-
+class CalendarActivity : AppCompatActivity() {
+    private lateinit var binding: FragmentCalendarBinding
     private lateinit var calendarAdapter: CalendarAdapter
     private val calendar = Calendar.getInstance()
     private var selectedDate: Calendar? = null
@@ -31,16 +31,13 @@ class CalendarFragment : Fragment() {
     private var selectedEndMinute = 0
     private var selectedDuration = 1 // in hours
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentCalendarBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+    private lateinit var auth: FirebaseAuth
+    private lateinit var database: FirebaseDatabase
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = FragmentCalendarBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setupCalendar()
         setupListeners()
@@ -52,7 +49,7 @@ class CalendarFragment : Fragment() {
         binding.currentMonthText.text = monthFormat.format(calendar.time).uppercase()
 
         // Setup calendar grid
-        binding.calendarGrid.layoutManager = GridLayoutManager(requireContext(), 7)
+        binding.calendarGrid.layoutManager = GridLayoutManager(this, 7)
         calendarAdapter = CalendarAdapter(getDaysInMonth(), calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR))
         binding.calendarGrid.adapter = calendarAdapter
     }
@@ -82,6 +79,11 @@ class CalendarFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        // Back button
+//        binding.backButton.setOnClickListener {
+//            finish()
+//        }
+
         // Duration selection
         binding.duration1Hour.setOnClickListener {
             selectedDuration = 1
@@ -110,28 +112,56 @@ class CalendarFragment : Fragment() {
         // Continue button
         binding.continueButton.setOnClickListener {
             if (selectedDate == null) {
-                Toast.makeText(requireContext(), "Please select a date", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please select a date", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Navigate to ParkingFragment
-            val bundle = Bundle().apply {
-                putLong("selectedDate", selectedDate!!.timeInMillis)
-                putInt("startHour", selectedStartHour)
-                putInt("startMinute", selectedStartMinute)
-                putInt("endHour", selectedEndHour)
-                putInt("endMinute", selectedEndMinute)
-                putInt("duration", selectedDuration)
-            }
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
+            val reservationId = UUID.randomUUID().toString()
+            val status = "active"
+            val plateNumber = "ABC123" // Replace with actual user input
+            val parkingSpot = "1st Floor Slot No. 5" // Set based on actual selection
 
-            // Navigate to parking fragment with the booking details
-            findNavController().navigate(R.id.parkingFragment, bundle)
+            val endCalendar = selectedDate!!.clone() as Calendar
+            endCalendar.set(Calendar.HOUR_OF_DAY, selectedEndHour)
+            endCalendar.set(Calendar.MINUTE, selectedEndMinute)
+            val endTimeMillis = endCalendar.timeInMillis
+
+            FirebaseRepository.saveReservation(
+                reservationId,
+                userId,
+                status,
+                plateNumber,
+                parkingSpot,
+                endTimeMillis
+            )
+
+            // Navigate to location selection
+            val intent = Intent(this, LocationSelectionActivity::class.java)
+            intent.putExtra("selectedDate", selectedDate!!.timeInMillis)
+            intent.putExtra("startHour", selectedStartHour)
+            intent.putExtra("startMinute", selectedStartMinute)
+            intent.putExtra("endHour", selectedEndHour)
+            intent.putExtra("endMinute", selectedEndMinute)
+            intent.putExtra("duration", selectedDuration)
+            startActivity(intent)
         }
+
+        // Bottom navigation
+//        binding.homeNavButton.setOnClickListener {
+//            val intent = Intent(this, HomeActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//            startActivity(intent)
+//        }
+//
+//        binding.parkingNavButton.setOnClickListener {
+//            finish()
+//        }
     }
 
     private fun showStartTimePicker() {
         val timePickerDialog = TimePickerDialog(
-            requireContext(),
+            this,
             { _, hourOfDay, minute ->
                 selectedStartHour = hourOfDay
                 selectedStartMinute = minute
@@ -148,7 +178,7 @@ class CalendarFragment : Fragment() {
 
     private fun showEndTimePicker() {
         val timePickerDialog = TimePickerDialog(
-            requireContext(),
+            this,
             { _, hourOfDay, minute ->
                 selectedEndHour = hourOfDay
                 selectedEndMinute = minute
@@ -192,11 +222,6 @@ class CalendarFragment : Fragment() {
         updateEndTimeButton()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     // Calendar Adapter
     inner class CalendarAdapter(
         private val days: List<Date>,
@@ -234,14 +259,14 @@ class CalendarFragment : Fragment() {
             // Set text color and background based on conditions
             if (isSameMonth && !isInPast) {
                 // Regular day in current month
-                holder.dayText.setTextColor(ContextCompat.getColor(requireContext(), R.color.main_color))
+                holder.dayText.setTextColor(ContextCompat.getColor(this@CalendarActivity, R.color.main_color))
 
                 // Check if this date is selected
                 if (position == selectedPosition) {
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.main_color))
-                    holder.dayText.setTextColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(this@CalendarActivity, R.color.main_color))
+                    holder.dayText.setTextColor(ContextCompat.getColor(this@CalendarActivity, R.color.white))
                 } else {
-                    holder.itemView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                    holder.itemView.setBackgroundColor(ContextCompat.getColor(this@CalendarActivity, R.color.white))
                 }
 
                 // Set click listener for valid dates
@@ -259,19 +284,19 @@ class CalendarFragment : Fragment() {
                 }
             } else if (isSameMonth && isInPast) {
                 // Past date in current month - grey out
-                holder.dayText.setTextColor(ContextCompat.getColor(requireContext(), R.color.medium_gray))
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                holder.dayText.setTextColor(ContextCompat.getColor(this@CalendarActivity, R.color.medium_gray))
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(this@CalendarActivity, R.color.white))
                 holder.itemView.setOnClickListener(null)
             } else {
                 // Date in other month - invisible
-                holder.dayText.setTextColor(ContextCompat.getColor(requireContext(), R.color.light_gray))
-                holder.itemView.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.white))
+                holder.dayText.setTextColor(ContextCompat.getColor(this@CalendarActivity, R.color.light_gray))
+                holder.itemView.setBackgroundColor(ContextCompat.getColor(this@CalendarActivity, R.color.white))
                 holder.itemView.setOnClickListener(null)
             }
 
             // Check if it's a Sunday
             if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-                holder.dayText.setTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+                holder.dayText.setTextColor(ContextCompat.getColor(this@CalendarActivity, R.color.red))
             }
         }
 

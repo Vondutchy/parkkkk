@@ -1,6 +1,6 @@
 package com.example.parkingapp.model
 
-data class UserModel(
+data class User(
     val name: String? = null,
     val userName: String? = null,
     val email: String? = null,
