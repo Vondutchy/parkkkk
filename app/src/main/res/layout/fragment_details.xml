@@ -21,26 +21,41 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Top Row Slot Grid -->
+    <!-- Vehicle Dropdown -->
+    <AutoCompleteTextView
+        android:id="@+id/vehicleDropdown"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:hint="Select your vehicle"
+        android:background="@drawable/rounded_blue_button"
+        android:padding="12dp"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"
+        android:inputType="none"
+        android:focusable="false"
+        android:clickable="true"
+        app:layout_constraintTop_toBottomOf="@id/floorTitleText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Bottom Row Slot Grid -->
-
-    <!-- Slot Information Card -->
-
+    <!-- Top Grid -->
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/slotGridTop"
         android:layout_width="380dp"
         android:layout_height="161dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:minHeight="100dp"
         android:padding="12dp"
         app:alignmentMode="alignMargins"
         app:columnCount="5"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintTop_toBottomOf="@id/vehicleDropdown"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/floorTitleText" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Bottom Grid -->
     <androidx.gridlayout.widget.GridLayout
         android:id="@+id/slotGridBottom"
         android:layout_width="382dp"
@@ -50,13 +65,12 @@
         android:padding="12dp"
         app:alignmentMode="alignMargins"
         app:columnCount="5"
-        app:layout_constraintBottom_toTopOf="@+id/slotInfoCard"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.482"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/slotGridTop"
-        app:layout_constraintVertical_bias="0.244" />
+        app:layout_constraintBottom_toTopOf="@+id/slotInfoCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- Slot Info Card (Unchanged) -->
     <androidx.cardview.widget.CardView
         android:id="@+id/slotInfoCard"
         android:layout_width="match_parent"
@@ -168,5 +182,4 @@
                 app:layout_constraintTop_toBottomOf="@+id/dateTimeInput" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

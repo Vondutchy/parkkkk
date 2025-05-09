@@ -1,4 +1,3 @@
-// ✅ Updated DetailsFragment.kt with Slot Grid View
 package com.example.parkingapp.Fragment
 
 import android.os.Bundle
@@ -6,7 +5,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -16,6 +15,8 @@ import com.example.parkingapp.databinding.FragmentDetailsBinding
 import com.example.parkingapp.model.Slot
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailsFragment : Fragment() {
     private var _binding: FragmentDetailsBinding? = null
@@ -24,12 +25,13 @@ class DetailsFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
     private val slotList = mutableListOf<Slot>()
+    private var selectedSlotId: String? = null
 
-    private var floorKey: String = "floor1" // default fallback
-
-    // Control flag for enabling interaction
-    private var canReserve: Boolean = false
+    private var floorKey: String = "floor1"
     private var selectedDate: Long = 0L
+    private var plateNumber: String? = null
+    private var canReserve: Boolean = false
+    private lateinit var dateKey: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,29 +49,105 @@ class DetailsFragment : Fragment() {
 
         floorKey = arguments?.getString("floor") ?: "floor1"
         selectedDate = arguments?.getLong("selectedDate") ?: 0L
+        dateKey = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date(selectedDate))
 
-        canReserve = selectedDate > 0
+        binding.slotGridTop.columnCount = 5
+        binding.slotGridBottom.columnCount = 5
 
-        loadSlots()
+        fetchVehicleList()
+
+        binding.reserveButton.setOnClickListener {
+            val slotId = selectedSlotId ?: return@setOnClickListener
+
+            if (plateNumber.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), "Please select a vehicle.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            reserveSlot(slotId)
+        }
+    }
+
+    private fun fetchVehicleList() {
+        val uid = auth.currentUser?.uid ?: return
+        val vehicleRef = database.child("user").child(uid).child("vehicles")
+
+        vehicleRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val vehiclePlates = mutableListOf<String>()
+                for (vehicleSnapshot in snapshot.children) {
+                    val plate = vehicleSnapshot.child("type").getValue(String::class.java)
+                    if (!plate.isNullOrBlank()) {
+                        vehiclePlates.add(plate)
+                    }
+                }
+
+                if (vehiclePlates.isNotEmpty()) {
+                    setupDropdown(vehiclePlates)
+                    canReserve = true
+                } else {
+                    Toast.makeText(requireContext(), "No vehicles found under your profile", Toast.LENGTH_SHORT).show()
+                }
+
+                loadSlots()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to fetch vehicle info", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setupDropdown(plates: List<String>) {
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, plates)
+        binding.vehicleDropdown.setAdapter(adapter)
+        binding.vehicleDropdown.setOnItemClickListener { parent, _, position, _ ->
+            plateNumber = parent.getItemAtPosition(position) as String
+        }
+        plateNumber = plates.firstOrNull()
     }
 
     private fun loadSlots() {
-        database.child("slots").child(floorKey)
-            .addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    slotList.clear()
-                    for (slotSnapshot in snapshot.children) {
-                        val slotId = slotSnapshot.key ?: continue
-                        val status = slotSnapshot.child("status").getValue(String::class.java) ?: "Available"
-                        slotList.add(Slot(slotId, status))
+        val slotPath = database.child("slots").child(floorKey).child(dateKey)
+
+        // Check if slots exist for this date
+        slotPath.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (!snapshot.exists()) {
+                    // Auto-create A1–A10 if this is the first time
+                    for (i in 1..10) {
+                        val slotId = "A$i"
+                        val slotData = mapOf(
+                            "status" to "Available",
+                            "reservedBy" to "",
+                            "plateNumber" to ""
+                        )
+                        slotPath.child(slotId).setValue(slotData)
                     }
-                    renderSlotBlocks()
                 }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(requireContext(), "Failed to load slots", Toast.LENGTH_SHORT).show()
-                }
-            })
+                // Load and listen for status updates
+                slotPath.addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        slotList.clear()
+                        for (slotSnap in dataSnapshot.children) {
+                            val slotId = slotSnap.key ?: continue
+                            val status = slotSnap.child("status").getValue(String::class.java) ?: "Available"
+                            slotList.add(Slot(slotId, status))
+                        }
+                        renderSlotBlocks()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(requireContext(), "Failed to load slots", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "Failed to check slot existence", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun renderSlotBlocks() {
@@ -103,11 +181,22 @@ class DetailsFragment : Fragment() {
                 )
                 setOnClickListener {
                     if (!canReserve) {
-                        Toast.makeText(requireContext(), "Please select date and time first.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(), "Please select a vehicle.", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
+
                     if (slot.status == "Available") {
-                        reserveSlot(slot.slotId)
+                        selectedSlotId = slot.slotId
+                        binding.slotNumberText.text = "Slot ${slot.slotId}"
+                        binding.slotLocationText.text = "${floorKey.uppercase()} Parking"
+                        binding.slotStatusText.text = "Available"
+                        binding.slotStatusText.setTextColor(resources.getColor(R.color.green))
+
+                        binding.dateTimeLabel.visibility = View.VISIBLE
+                        binding.dateTimeInput.visibility = View.VISIBLE
+                        binding.totalLabel.visibility = View.VISIBLE
+                        binding.totalAmount.visibility = View.VISIBLE
+                        binding.reserveButton.visibility = View.VISIBLE
                     } else {
                         Toast.makeText(requireContext(), "Slot ${slot.slotId} is not available", Toast.LENGTH_SHORT).show()
                     }
@@ -115,23 +204,20 @@ class DetailsFragment : Fragment() {
             }
         }
 
-        topSlots.forEach { slot ->
-            binding.slotGridTop.addView(createSlotView(slot))
-        }
-
-        bottomSlots.forEach { slot ->
-            binding.slotGridBottom.addView(createSlotView(slot))
-        }
+        topSlots.forEach { binding.slotGridTop.addView(createSlotView(it)) }
+        bottomSlots.forEach { binding.slotGridBottom.addView(createSlotView(it)) }
     }
 
     private fun reserveSlot(slotId: String) {
         val uid = auth.currentUser?.uid ?: return
+        val slotRef = database.child("slots").child(floorKey).child(dateKey).child(slotId)
 
-        database.child("slots").child(floorKey).child(slotId).child("status").setValue("Reserved")
-        database.child("slots").child(floorKey).child(slotId).child("reservedBy").setValue(uid)
-        database.child("reservations").child(uid).child(slotId).setValue(floorKey)
+        slotRef.child("status").setValue("Reserved")
+        slotRef.child("reservedBy").setValue(uid)
+        slotRef.child("plateNumber").setValue(plateNumber)
 
-        Toast.makeText(requireContext(), "Reserved $slotId", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "Reserved $slotId for $plateNumber", Toast.LENGTH_SHORT).show()
+        loadSlots()
     }
 
     override fun onDestroyView() {
