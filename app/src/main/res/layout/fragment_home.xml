@@ -157,7 +157,7 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/plateNumberText"
+                android:id="@+id/contactNumberField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -177,8 +177,8 @@
                 android:text="1st Floor Slot No. 5"
                 android:textColor="#666666"
                 android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="@id/plateNumberText"
-                app:layout_constraintTop_toBottomOf="@id/plateNumberText" />
+                app:layout_constraintStart_toStartOf="@id/contactNumberField"
+                app:layout_constraintTop_toBottomOf="@id/contactNumberField" />
 
             <TextView
                 android:id="@+id/timeRemaining"

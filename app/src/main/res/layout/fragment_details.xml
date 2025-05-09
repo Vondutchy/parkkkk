@@ -21,199 +21,42 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Parking Layout -->
-    <FrameLayout
-        android:id="@+id/parkingLayout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toTopOf="@+id/slotInfoCard"
-        app:layout_constraintTop_toBottomOf="@+id/floorTitleText">
+    <!-- Top Row Slot Grid -->
 
-        <!-- Parking Outline -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/parking_outline" />
-
-        <!-- Vertical lines -->
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:layout_marginStart="40dp"
-            android:background="@color/black" />
-
-        <View
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="end"
-            android:layout_marginEnd="40dp"
-            android:background="@color/black" />
-
-        <!-- Middle lane -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_gravity="center_vertical"
-            android:background="@color/black" />
-
-        <!-- Parking Slots -->
-        <LinearLayout
-            android:id="@+id/leftColumnSlots"
-            android:layout_width="120dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            android:layout_marginStart="50dp"
-            android:layout_marginVertical="36dp"
-            android:orientation="vertical">
-
-            <!-- Slot 1 -->
-            <FrameLayout
-                android:id="@+id/slotA1"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_margin="4dp">
-
-                <View
-                    android:id="@+id/slotA1Background"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/green_dashed_border" />
-
-                <LinearLayout
-                    android:id="@+id/carDetailsA1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/plateNumberA1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="ABC 1234"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/phoneNumberA1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0912-345-6789"
-                        android:textColor="@color/black"
-                        android:textSize="8sp" />
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- Slot 2 -->
-            <FrameLayout
-                android:id="@+id/slotA2"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_margin="4dp">
-
-                <View
-                    android:id="@+id/slotA2Background"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/red_dashed_border_filled" />
-
-                <LinearLayout
-                    android:id="@+id/carDetailsA2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp"
-                    android:visibility="visible">
-
-                    <TextView
-                        android:id="@+id/plateNumberA2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="XYZ 789"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/phoneNumberA2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0923-456-7890"
-                        android:textColor="@color/black"
-                        android:textSize="8sp" />
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- Slot 3 -->
-            <FrameLayout
-                android:id="@+id/slotA3"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:layout_margin="4dp">
-
-                <View
-                    android:id="@+id/slotA3Background"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/yellow_dashed_border" />
-
-                <LinearLayout
-                    android:id="@+id/carDetailsA3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="4dp"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:id="@+id/plateNumberA3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="DEF 456"
-                        android:textColor="@color/black"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/phoneNumberA3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0934-567-8901"
-                        android:textColor="@color/black"
-                        android:textSize="8sp" />
-                </LinearLayout>
-            </FrameLayout>
-        </LinearLayout>
-
-        <!-- Entrance/Exit Icons -->
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="bottom|start"
-            android:layout_marginStart="24dp"
-            android:layout_marginBottom="24dp" />
-
-        <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="24dp" />
-    </FrameLayout>
+    <!-- Bottom Row Slot Grid -->
 
     <!-- Slot Information Card -->
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/slotGridTop"
+        android:layout_width="380dp"
+        android:layout_height="161dp"
+        android:layout_marginTop="20dp"
+        android:minHeight="100dp"
+        android:padding="12dp"
+        app:alignmentMode="alignMargins"
+        app:columnCount="5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.483"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/floorTitleText" />
+
+    <androidx.gridlayout.widget.GridLayout
+        android:id="@+id/slotGridBottom"
+        android:layout_width="382dp"
+        android:layout_height="171dp"
+        android:layout_marginTop="32dp"
+        android:minHeight="100dp"
+        android:padding="12dp"
+        app:alignmentMode="alignMargins"
+        app:columnCount="5"
+        app:layout_constraintBottom_toTopOf="@+id/slotInfoCard"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.482"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/slotGridTop"
+        app:layout_constraintVertical_bias="0.244" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/slotInfoCard"
         android:layout_width="match_parent"

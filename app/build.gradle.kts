@@ -57,6 +57,7 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     implementation("com.google.firebase:firebase-database:21.0.0")
+    implementation("androidx.gridlayout:gridlayout:1.0.0") //
 
     implementation("com.github.denzcoskun:ImageSlideshow:0.1.2")
 

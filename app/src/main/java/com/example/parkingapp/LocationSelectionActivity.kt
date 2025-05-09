@@ -109,7 +109,8 @@ class LocationSelectionActivity : AppCompatActivity() {
     }
 
     private fun navigateToFloorDetails(floor: String) {
-        val intent = Intent(this, FloorDetailsActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra("navigateTo", "details")
         intent.putExtra("floor", floor)
         intent.putExtra("selectedDate", selectedDate)
         intent.putExtra("startHour", startHour)
@@ -119,4 +120,5 @@ class LocationSelectionActivity : AppCompatActivity() {
         intent.putExtra("duration", duration)
         startActivity(intent)
     }
+
 }

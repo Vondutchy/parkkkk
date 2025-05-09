@@ -9,13 +9,15 @@ import com.example.parkingapp.databinding.ActivityCreateAccountBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import com.example.parkingapp.model.Vehicle
 
 class CreateAccountActivity : AppCompatActivity() {
 
     private lateinit var userName: String
     private lateinit var email: String
-    private lateinit var plateNumber: String
+    private lateinit var contactNumber: String
     private lateinit var password: String
     private lateinit var confirmPassword: String
     private lateinit var auth: FirebaseAuth
@@ -34,16 +36,16 @@ class CreateAccountActivity : AppCompatActivity() {
         binding.signUpButton.setOnClickListener {
             userName = binding.usernameField.text.toString().trim()
             email = binding.emailField.text.toString().trim()
-            plateNumber = binding.plateNumberField.text.toString().trim()
+            contactNumber = binding.contactNumberField.text.toString().trim() // Renamed
             password = binding.passwordField.text.toString().trim()
             confirmPassword = binding.confirmPasswordField.text.toString().trim()
 
-            if (userName.isBlank() || email.isBlank() || plateNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            if (userName.isBlank() || email.isBlank() || contactNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
                 Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show()
             } else if (userName.length < 4) {
                 Toast.makeText(this, "Username must be at least 4 characters", Toast.LENGTH_SHORT).show()
-            } else if (plateNumber.length < 6) {
-                Toast.makeText(this, "Plate number must be at least 6 characters", Toast.LENGTH_SHORT).show()
+            } else if (!contactNumber.matches(Regex("^\\d{11}$"))) {
+                Toast.makeText(this, "Contact number must be exactly 11 digits", Toast.LENGTH_SHORT).show()
             } else if (password.length < 6) {
                 Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show()
             } else if (password != confirmPassword) {
@@ -72,7 +74,16 @@ class CreateAccountActivity : AppCompatActivity() {
                     .setDisplayName(userName)
                     .build()
 
-                FirebaseAuth.getInstance().currentUser?.updateProfile(profileUpdates)
+                val user = FirebaseAuth.getInstance().currentUser
+                user?.updateProfile(profileUpdates)
+
+                // Save user data to Firebase Realtime Database
+                val userId = user?.uid
+                if (userId != null) {
+                    val dbRef = Firebase.database.reference.child("user").child(userId)
+                    dbRef.child("name").setValue(userName)
+                    dbRef.child("contactNumber").setValue(contactNumber)
+                }
 
                 Toast.makeText(this, "Account created Successfully", Toast.LENGTH_SHORT).show()
                 val intent = Intent(this, SignInActivity::class.java)
