@@ -6,23 +6,19 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.parkingapp.databinding.ActivityCreateAccountBinding
-import com.example.parkingapp.model.User
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
 class CreateAccountActivity : AppCompatActivity() {
 
-    private lateinit var name: String
     private lateinit var userName: String
     private lateinit var email: String
     private lateinit var plateNumber: String
     private lateinit var password: String
     private lateinit var confirmPassword: String
     private lateinit var auth: FirebaseAuth
-    private lateinit var database: DatabaseReference
 
     private val binding: ActivityCreateAccountBinding by lazy {
         ActivityCreateAccountBinding.inflate(layoutInflater)
@@ -32,24 +28,18 @@ class CreateAccountActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //initialize Firebase auth
+        // Initialize Firebase Auth
         auth = Firebase.auth
-        //initialize Firebase auth
-        database = Firebase.database.reference
 
         binding.signUpButton.setOnClickListener {
-
-            name = binding.nameField.text.toString().trim()
             userName = binding.usernameField.text.toString().trim()
             email = binding.emailField.text.toString().trim()
             plateNumber = binding.plateNumberField.text.toString().trim()
             password = binding.passwordField.text.toString().trim()
             confirmPassword = binding.confirmPasswordField.text.toString().trim()
 
-            if (name.isBlank() || userName.isBlank() || email.isBlank() || plateNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+            if (userName.isBlank() || email.isBlank() || plateNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
                 Toast.makeText(this, "Please fill in all the fields", Toast.LENGTH_SHORT).show()
-            } else if (name.length < 3) {
-                Toast.makeText(this, "Name must be at least 3 characters", Toast.LENGTH_SHORT).show()
             } else if (userName.length < 4) {
                 Toast.makeText(this, "Username must be at least 4 characters", Toast.LENGTH_SHORT).show()
             } else if (plateNumber.length < 6) {
@@ -62,7 +52,6 @@ class CreateAccountActivity : AppCompatActivity() {
                 createAccount(email, password)
             }
         }
-
 
         // Go to Sign In page
         binding.signInButton.setOnClickListener {
@@ -78,8 +67,14 @@ class CreateAccountActivity : AppCompatActivity() {
     private fun createAccount(email: String, password: String) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                // Set display name as username
+                val profileUpdates = UserProfileChangeRequest.Builder()
+                    .setDisplayName(userName)
+                    .build()
+
+                FirebaseAuth.getInstance().currentUser?.updateProfile(profileUpdates)
+
                 Toast.makeText(this, "Account created Successfully", Toast.LENGTH_SHORT).show()
-                saveUserData()
                 val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
                 finish()
@@ -89,16 +84,4 @@ class CreateAccountActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun saveUserData() {
-        name = binding.nameField.text.toString().trim()
-        userName = binding.usernameField.text.toString().trim()
-        email = binding.emailField.text.toString().trim()
-        plateNumber = binding.plateNumberField.text.toString().trim()
-        password = binding.passwordField.text.toString().trim()
-        val user = User(name, userName, email, plateNumber, password)
-        val userId = FirebaseAuth.getInstance().currentUser!!.uid
-        database.child("user").child(userId).setValue(user)
-    }
 }
-
